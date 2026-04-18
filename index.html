@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GUNAIS — 谷奈斯空间设计</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    /* ══════════════════════════════════════════
+       CCD Structure — 1:1 Replication
+       Structure: Hero → Our Story → Sub-brands → Services Marquee → Philosophy → Footer
+    ══════════════════════════════════════════ */
+
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black:   #0a0a0a;
+      --white:   #f5f4f0;
+      --grey:    #888;
+      --gold:    #b89a6a;
+      --gold-lt: #d4b88a;
+      --nav-h:   72px;
+      --ease:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Jost', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.03em;
+      cursor: none;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; cursor: none; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    button { cursor: none; }
+
+    /* ─── Custom Cursor ─── */
+    #cursor {
+      position: fixed; z-index: 9999; pointer-events: none;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--white);
+      transform: translate(-50%, -50%);
+      transition: width 0.3s var(--ease), height 0.3s var(--ease), background 0.3s;
+    }
+    #cursor-ring {
+      position: fixed; z-index: 9998; pointer-events: none;
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(245,244,240,0.4);
+      transform: translate(-50%, -50%);
+      transition: width 0.4s var(--ease), height 0.4s var(--ease), border-color 0.3s;
+    }
+    body:has(a:hover) #cursor,
+    body:has(button:hover) #cursor { width: 12px; height: 12px; background: var(--gold); }
+    body:has(a:hover) #cursor-ring,
+    body:has(button:hover) #cursor-ring { width: 52px; height: 52px; border-color: var(--gold); }
+
+    /* ─── Navigation ─── */
+    /* CCD: Fixed top nav, Logo left, menu center-right, social icons right, lang switcher */
+    #nav {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      transition: background 0.5s var(--ease), backdrop-filter 0.5s;
+    }
+    #nav.scrolled {
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-left { display: flex; align-items: center; gap: 32px; }
+    .nav-logo {
+      font-family: 'Jost', sans-serif;
+      font-weight: 200;
+      font-size: 1.25rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+    .nav-logo span { color: var(--gold); }
+
+    /* CCD style: menu items with subtle separator */
+    .nav-menu {
+      display: flex; align-items: center; gap: 0;
+      list-style: none;
+    }
+    .nav-menu li {
+      position: relative;
+      padding: 0 18px;
+    }
+    .nav-menu li::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 1px; height: 14px;
+      background: rgba(255,255,255,0.15);
+    }
+    .nav-menu li:last-child::after { display: none; }
+    .nav-menu a {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 400;
+      opacity: 0.6;
+      transition: opacity 0.3s, color 0.3s;
+      white-space: nowrap;
+    }
+    .nav-menu a:hover { opacity: 1; color: var(--gold); }
+
+    /* CCD style: dropdown on hover */
+    .has-sub:hover > .sub-menu { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .sub-menu {
+      position: absolute; top: calc(100% + 20px); left: 0;
+      background: rgba(10,10,10,0.97);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-width: 180px; padding: 12px 0;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+      list-style: none;
+    }
+    .sub-menu li { padding: 0 24px; }
+    .sub-menu li::after { display: none; }
+    .sub-menu li a {
+      display: block; padding: 10px 0;
+      font-size: 0.62rem; letter-spacing: 0.15em;
+      opacity: 0.5;
+    }
+    .sub-menu li a:hover { opacity: 1; color: var(--gold); }
+
+    /* CCD: right side — social icons + lang */
+    .nav-right {
+      display: flex; align-items: center; gap: 24px;
+    }
+    .nav-social {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .nav-social a {
+      opacity: 0.4;
+      transition: opacity 0.3s;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+    .nav-social a:hover { opacity: 1; }
+    .nav-social svg {
+      width: 16px; height: 16px;
+      stroke: var(--white); fill: none; stroke-width: 1.5;
+      transition: stroke 0.3s;
+    }
+    .nav-social a:hover svg { stroke: var(--gold); }
+    .nav-lang {
+      font-size: 0.62rem; letter-spacing: 0.15em;
+      opacity: 0.4;
+      padding: 4px 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: opacity 0.3s, border-color 0.3s;
+    }
+    .nav-lang:hover { opacity: 1; border-color: var(--gold); }
+
+    /* hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span {
+      display: block; width: 24px; height: 1px;
+      background: var(--white);
+      transition: transform 0.35s var(--ease), opacity 0.35s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    /* mobile overlay */
+    #mobile-menu {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--black);
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 32px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s var(--ease);
+    }
+    #mobile-menu.open { opacity: 1; pointer-events: all; }
+    #mobile-menu a { font-size: 1.4rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 200; }
+    #mobile-menu a:hover { color: var(--gold); }
+
+    /* ─── Hero ─── */
+    /* CCD: Full-screen video background + single poetic line + "Our Story" link */
+    #hero {
+      position: relative;
+      width: 100%; height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    /* ─── Video Background ─── */
+    .hero-video-wrap {
+      position: absolute; inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .hero-video-wrap video,
+    .hero-video-wrap .hero-fallback-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      min-width: 100%; min-height: 100%;
+      width: auto; height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+    }
+    /* CCD-style: video plays at ~60-70% opacity for subtle text readability */
+    .hero-video-wrap video {
+      opacity: 0;
+      animation: videoFadeIn 2s 0.5s ease forwards;
+    }
+    @keyframes videoFadeIn {
+      to { opacity: 0.65; }
+    }
+    /* Fallback static background when no video */
+    .hero-fallback-bg {
+      background:
+        radial-gradient(ellipse 80% 60% at 30% 40%, rgba(184,154,106,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 75% 60%, rgba(30,50,80,0.1) 0%, transparent 60%),
+        linear-gradient(160deg, #12100e 0%, #0a0a0a 50%, #0d0f14 100%);
+      z-index: -1;
+    }
+    /* Dark overlay on top of video — ensures text is readable */
+    .hero-overlay {
+      position: absolute; inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(to bottom,
+          rgba(10,10,10,0.35) 0%,
+          rgba(10,10,10,0.15) 40%,
+          rgba(10,10,10,0.15) 60%,
+          rgba(10,10,10,0.55) 100%),
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(10,10,10,0.1) 0%, transparent 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .hero-lead {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(2.2rem, 5.5vw, 5rem);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      max-width: 900px;
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 1.2s 0.3s var(--ease) forwards;
+    }
+    .hero-lead .gold { color: var(--gold-lt); }
+    .hero-our-story {
+      margin-top: 48px;
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 1s 0.9s var(--ease) forwards;
+    }
+    .hero-our-story a {
+      display: inline-flex; align-items: center; gap: 12px;
+      color: var(--gold);
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 4px;
+      transition: gap 0.3s var(--ease), opacity 0.3s;
+    }
+    .hero-our-story a:hover { gap: 20px; }
+    .hero-our-story a svg {
+      width: 14px; height: 14px;
+      stroke: var(--gold); fill: none; stroke-width: 1.5;
+    }
+
+    /* scroll indicator */
+    .hero-scroll {
+      position: absolute; bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      opacity: 0; animation: fadeIn 1s 1.5s forwards;
+    }
+    .hero-scroll span {
+      font-size: 0.55rem; letter-spacing: 0.25em;
+      text-transform: uppercase; opacity: 0.3;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, transparent, rgba(245,244,240,0.4));
+      animation: scrollPulse 2.5s 1.8s var(--ease) infinite;
+    }
+    @keyframes scrollPulse {
+      0%   { transform: scaleY(0); transform-origin: top; opacity: 0; }
+      50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+      100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+    }
+
+    /* ─── Our Story ─── */
+    /* CCD: Text-focused section, left-aligned prose paragraphs */
+    #our-story {
+      padding: 140px 0;
+      background: var(--black);
+    }
+    .story-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 64px;
+    }
+    .story-header {
+      margin-bottom: 56px;
+    }
+    .story-label {
+      font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .story-label::before {
+      content: ''; display: block;
+      width: 32px; height: 1px; background: var(--gold);
+    }
+    .story-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.15; letter-spacing: 0.02em;
+    }
+    .story-body {
+      font-size: 0.92rem;
+      line-height: 2.1;
+      color: rgba(245,244,240,0.6);
+      letter-spacing: 0.04em;
+    }
+    .story-body p + p { margin-top: 24px; }
+    .story-body .highlight {
+      color: var(--gold-lt);
+      font-weight: 400;
+    }
+
+    /* ─── Sub-brands ─── */
+    /* CCD: Horizontal logo/sub-brand strip */
+    #sub-brands {
+      padding: 100px 0;
+      background: #080808;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .brands-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 64px;
+    }
+    .brands-label {
+      font-size: 0.58rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 48px;
+      opacity: 0.6;
+    }
+    .brands-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.04);
+    }
+    .brand-item {
+      background: #080808;
+      padding: 40px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      transition: background 0.4s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+    .brand-item:hover {
+      background: rgba(255,255,255,0.02);
+    }
+    .brand-item::after {
+      content: '';
+      position: absolute; bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.5s var(--ease);
+    }
+    .brand-item:hover::after { width: 60%; }
+    .brand-icon {
+      width: 40px; height: 40px;
+      margin-bottom: 16px;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 1;
+      opacity: 0.6;
+      transition: opacity 0.3s;
+    }
+    .brand-item:hover .brand-icon { opacity: 1; }
+    .brand-name {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 400;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .brand-item:hover .brand-name { opacity: 1; }
+    .brand-desc {
+      font-size: 0.72rem;
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+      opacity: 0.3;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    /* ─── Services Marquee ─── */
+    /* CCD: Horizontal infinite scrolling service items — key signature feature */
+    #services {
+      padding: 120px 0;
+      background: var(--black);
+    }
+    .services-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .services-label {
+      font-size: 0.58rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+      opacity: 0.6;
+    }
+    .services-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      letter-spacing: 0.02em;
+    }
+    /* CCD: Two-row marquee, opposite directions */
+    .marquee-section { margin-top: 20px; }
+    .marquee-row {
+      overflow: hidden;
+      padding: 20px 0;
+    }
+    .marquee-row + .marquee-row {
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .marquee-track-left {
+      display: flex; gap: 0;
+      animation: marqueeLeft 40s linear infinite;
+      width: max-content;
+    }
+    .marquee-track-right {
+      display: flex; gap: 0;
+      animation: marqueeRight 40s linear infinite;
+      width: max-content;
+    }
+    .marquee-row:hover .marquee-track-left,
+    .marquee-row:hover .marquee-track-right {
+      animation-play-state: paused;
+    }
+    @keyframes marqueeLeft {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes marqueeRight {
+      from { transform: translateX(-50%); }
+      to   { transform: translateX(0); }
+    }
+    .svc-marquee-item {
+      display: flex; align-items: center;
+      padding: 0 32px;
+      white-space: nowrap;
+      transition: color 0.3s;
+    }
+    .svc-marquee-item:hover { color: var(--gold); }
+    .svc-marquee-en {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+    .svc-marquee-zh {
+      font-size: 0.72rem;
+      margin-left: 12px;
+      letter-spacing: 0.08em;
+      font-family: 'Noto Serif SC', serif;
+      opacity: 0.35;
+    }
+    .svc-marquee-sep {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+      margin: 0 8px;
+      opacity: 0.4;
+    }
+
+    /* ─── Philosophy ─── */
+    /* CCD: Full-screen large typography — "EVERY CORNER, A CANVAS..." style */
+    #philosophy {
+      padding: 180px 0 160px;
+      background: #050505;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #philosophy::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(184,154,106,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .phil-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 4.5vw, 4rem);
+      font-weight: 300; font-style: italic;
+      line-height: 1.3; letter-spacing: 0.02em;
+      max-width: 900px; margin: 0 auto;
+    }
+    .phil-main .gold { color: var(--gold-lt); }
+    .phil-main .block {
+      display: block;
+      margin: 12px 0;
+    }
+    .phil-concept {
+      margin-top: 56px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .phil-desc {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      opacity: 0.4;
+      font-family: 'Noto Serif SC', serif;
+      line-height: 1.8;
+    }
+    .phil-tags {
+      display: flex; justify-content: center; gap: 40px;
+      margin-top: 72px; flex-wrap: wrap;
+    }
+    .phil-tag {
+      font-size: 0.62rem; letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.3;
+      padding: 10px 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: opacity 0.3s, border-color 0.3s, color 0.3s;
+    }
+    .phil-tag:hover { opacity: 0.8; border-color: var(--gold); color: var(--gold); }
+
+    /* ─── Footer ─── */
+    /* CCD: Minimal footer — nav links + social + copyright */
+    footer {
+      background: #050505;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 56px 0 36px;
+    }
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 64px;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .footer-nav {
+      display: flex; gap: 40px;
+    }
+    .footer-nav a {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      transition: opacity 0.3s, color 0.3s;
+    }
+    .footer-nav a:hover { opacity: 1; color: var(--gold); }
+    .footer-social {
+      display: flex; gap: 20px;
+    }
+    .footer-social a {
+      font-size: 0.68rem;
+      opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+    .footer-social a:hover { opacity: 1; }
+    .footer-social svg {
+      width: 16px; height: 16px;
+      stroke: var(--white); fill: none; stroke-width: 1.5;
+      transition: stroke 0.3s;
+    }
+    .footer-social a:hover svg { stroke: var(--gold); }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 28px;
+    }
+    .footer-copy {
+      font-size: 0.6rem;
+      opacity: 0.2;
+      letter-spacing: 0.1em;
+    }
+    .footer-icp {
+      font-size: 0.58rem;
+      opacity: 0.15;
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── Reveal Animation ─── */
+    .reveal {
+      opacity: 0; transform: translateY(36px);
+      transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.12s; }
+    .reveal-d2 { transition-delay: 0.24s; }
+    .reveal-d3 { transition-delay: 0.36s; }
+    .reveal-d4 { transition-delay: 0.48s; }
+
+    /* ─── Keyframes ─── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 1100px) {
+      .brands-grid { grid-template-columns: repeat(3, 1fr); }
+      .brand-item:last-child { display: none; }
+    }
+    @media (max-width: 768px) {
+      :root { --nav-h: 60px; }
+      #nav { padding: 0 24px; }
+      .nav-menu { display: none; }
+      .nav-right { display: none; }
+      .hamburger { display: flex; }
+      .story-container, .brands-container, .footer-container { padding: 0 24px; }
+      #our-story { padding: 100px 0; }
+      #sub-brands { padding: 80px 0; }
+      .brands-grid { grid-template-columns: repeat(2, 1fr); }
+      #services { padding: 80px 0; }
+      #philosophy { padding: 120px 0; }
+      .footer-top { flex-direction: column; gap: 28px; align-items: flex-start; }
+      .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+      .phil-tags { gap: 12px; }
+      .hero-scroll { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ═══ Navigation ═══ -->
+<!-- CCD: Logo | HOME · ABOUT(+dropdown) · PORTFOLIO · CAREER · CONNECT · NEWS(+dropdown) | Social Icons + EN/中 -->
+<nav id="nav">
+  <div class="nav-left">
+    <a href="#" class="nav-logo">GUNAIS <span>·</span> 谷奈斯</a>
+    <ul class="nav-menu">
+      <li><a href="#">HOME</a></li>
+      <li class="has-sub">
+        <a href="#our-story">ABOUT</a>
+        <ul class="sub-menu">
+          <li><a href="#our-story">OUR STORY 我们的故事</a></li>
+          <li><a href="#">TEAM 团队</a></li>
+        </ul>
+      </li>
+      <li><a href="#">PORTFOLIO</a></li>
+      <li><a href="#">CAREER</a></li>
+      <li><a href="#">CONNECT</a></li>
+      <li class="has-sub">
+        <a href="#">NEWS</a>
+        <ul class="sub-menu">
+          <li><a href="#">EVENTS 活动</a></li>
+          <li><a href="#">PRESS 媒体报道</a></li>
+          <li><a href="#">AWARDS 奖项</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="nav-right">
+    <div class="nav-social">
+      <!-- Facebook -->
+      <a href="#" title="Facebook">
+        <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      </a>
+      <!-- Instagram -->
+      <a href="#" title="Instagram">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <!-- LinkedIn -->
+      <a href="#" title="LinkedIn">
+        <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+    </div>
+    <div class="nav-lang">中 / EN</div>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu">
+  <a href="#" onclick="toggleMenu()">HOME</a>
+  <a href="#our-story" onclick="toggleMenu()">ABOUT</a>
+  <a href="#" onclick="toggleMenu()">PORTFOLIO</a>
+  <a href="#" onclick="toggleMenu()">CAREER</a>
+  <a href="#" onclick="toggleMenu()">CONNECT</a>
+  <a href="#" onclick="toggleMenu()">NEWS</a>
+</div>
+
+<!-- ═══ Hero ═══ -->
+<!-- CCD: Full-screen video background + centered poetic line + "Our Story" link -->
+<section id="hero">
+
+  <!-- ─── Video Background ─── -->
+  <div class="hero-video-wrap">
+
+    <!--
+      ★★★ 替换视频说明 ★★★
+      将你的视频文件（如 hero.mp4）放入 gunais-website 文件夹，
+      然后取消下面 <video> 标签的注释，并填入正确的文件名。
+
+      <video autoplay muted loop playsinline preload="auto" poster="hero-poster.jpg">
+        <source src="hero.mp4" type="video/mp4" />
+      </video>
+    -->
+
+    <!-- 无视频时显示的静态渐变背景 -->
+    <div class="hero-fallback-bg"></div>
+  </div>
+
+  <!-- 暗色叠加层（保证文字可读性） -->
+  <div class="hero-overlay"></div>
+
+  <!-- 主内容 -->
+  <div class="hero-content">
+    <h1 class="hero-lead">
+      It started from a <span class="gold">sketch</span>...<br>
+      <span style="font-size:0.65em; opacity:0.5; font-style:normal; font-family:'Jost',sans-serif; letter-spacing:0.25em; text-transform:uppercase; display:block; margin-top:16px;">
+        始于一张草图 · 成于卓越空间
+      </span>
+    </h1>
+    <div class="hero-our-story">
+      <a href="#our-story">
+        OUR STORY 我们的故事
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══ Our Story ═══ -->
+<!-- CCD: Text-focused prose section about the company -->
+<section id="our-story">
+  <div class="story-container">
+    <div class="story-header reveal">
+      <p class="story-label">Our Story</p>
+      <h2 class="story-title">我们的故事</h2>
+    </div>
+    <div class="story-body reveal reveal-d1">
+      <p>谷奈斯空间设计（GUNAIS）由创始人<span class="highlight">邵阳</span>先生于2024年在上海创立，前身为15年深耕商业空间设计领域的专业设计实践。邵阳先生拥有ICDA高级室内建筑师资质，系中国建筑学会及中国建筑装饰协会会员，曾参与上海虹桥国际机场、沈阳及天津恒隆广场、嘉善古镇修缮、来福士广场等国内重大商业项目的设计与深化工作。</p>
+      <p>谷奈斯以<span class="highlight">"精细化设计，创造高品质空间"</span>为核心理念，专注于商业综合体、办公空间、酒店会展及展览展示等多元商业空间领域。公司提供从前期规划咨询、室内设计、施工图深化到EPC设计管理的全周期设计服务。</p>
+      <p>我们相信，卓越的空间设计不仅是视觉的呈现，更是<span class="highlight">品牌价值与人文关怀</span>的融合。理性的逻辑框架、克制的设计语言、对体验的深度关注——构成谷奈斯独特的设计哲学，也驱动着品牌的持续发展。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Sub-brands / 服务矩阵 ═══ -->
+<!-- CCD: Horizontal sub-brand / service capabilities grid -->
+<section id="sub-brands">
+  <div class="brands-container">
+    <p class="brands-label reveal">Capabilities</p>
+    <div class="brands-grid">
+      <div class="brand-item reveal">
+        <svg class="brand-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg>
+        <div class="brand-name">Interior Design</div>
+        <div class="brand-desc">室内设计</div>
+      </div>
+      <div class="brand-item reveal reveal-d1">
+        <svg class="brand-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <div class="brand-name">Design Development</div>
+        <div class="brand-desc">施工图深化</div>
+      </div>
+      <div class="brand-item reveal reveal-d2">
+        <svg class="brand-icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <div class="brand-name">EPC Management</div>
+        <div class="brand-desc">EPC设计管理</div>
+      </div>
+      <div class="brand-item reveal reveal-d3">
+        <svg class="brand-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <div class="brand-name">Lighting Design</div>
+        <div class="brand-desc">照明设计</div>
+      </div>
+      <div class="brand-item reveal">
+        <svg class="brand-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div class="brand-name">FF&E Procurement</div>
+        <div class="brand-desc">家具与采购</div>
+      </div>
+      <div class="brand-item reveal reveal-d1">
+        <svg class="brand-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <div class="brand-name">Signage Design</div>
+        <div class="brand-desc">标识导向设计</div>
+      </div>
+      <div class="brand-item reveal reveal-d2">
+        <svg class="brand-icon" viewBox="0 0 24 24"><polygon points="12,2 22,20 2,20"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="brand-name">Space Planning</div>
+        <div class="brand-desc">空间规划咨询</div>
+      </div>
+      <div class="brand-item reveal reveal-d3">
+        <svg class="brand-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <div class="brand-name">On-site Service</div>
+        <div class="brand-desc">现场技术服务</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Services Marquee ═══ -->
+<!-- CCD: Signature horizontal infinite scrolling marquee — two rows, opposite directions -->
+<section id="services">
+  <div style="text-align:center;">
+    <p class="services-label reveal">Services</p>
+    <h2 class="services-title reveal reveal-d1">全链路设计服务</h2>
+  </div>
+  <div class="marquee-section">
+    <!-- Row 1: scrolls left -->
+    <div class="marquee-row">
+      <div class="marquee-track-left">
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Preliminary Planning</span>
+          <span class="svc-marquee-zh">前期规划咨询</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Interior Design</span>
+          <span class="svc-marquee-zh">室内设计</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Design Development</span>
+          <span class="svc-marquee-zh">施工图深化</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Artwork Consulting</span>
+          <span class="svc-marquee-zh">艺术品顾问</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">FF&E Design</span>
+          <span class="svc-marquee-zh">FF&E设计采购</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">MEP Design</span>
+          <span class="svc-marquee-zh">机电设计</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Lighting Design</span>
+          <span class="svc-marquee-zh">灯光设计</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Signage Design</span>
+          <span class="svc-marquee-zh">标识设计</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">On-site Technical Service</span>
+          <span class="svc-marquee-zh">现场技术服务</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <!-- Duplicate for seamless loop -->
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Preliminary Planning</span>
+          <span class="svc-marquee-zh">前期规划咨询</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Interior Design</span>
+          <span class="svc-marquee-zh">室内设计</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Design Development</span>
+          <span class="svc-marquee-zh">施工图深化</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Artwork Consulting</span>
+          <span class="svc-marquee-zh">艺术品顾问</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">FF&E Design</span>
+          <span class="svc-marquee-zh">FF&E设计采购</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">MEP Design</span>
+          <span class="svc-marquee-zh">机电设计</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Lighting Design</span>
+          <span class="svc-marquee-zh">灯光设计</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Signage Design</span>
+          <span class="svc-marquee-zh">标识设计</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">On-site Technical Service</span>
+          <span class="svc-marquee-zh">现场技术服务</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+      </div>
+    </div>
+    <!-- Row 2: scrolls right -->
+    <div class="marquee-row">
+      <div class="marquee-track-right">
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Commercial Complex</span>
+          <span class="svc-marquee-zh">商业综合体</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Office Space</span>
+          <span class="svc-marquee-zh">办公空间</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Hotel & Exhibition</span>
+          <span class="svc-marquee-zh">酒店会展</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Exhibition Design</span>
+          <span class="svc-marquee-zh">展览展示</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">EPC Project Management</span>
+          <span class="svc-marquee-zh">EPC项目总包</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Heritage Restoration</span>
+          <span class="svc-marquee-zh">古建修缮</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Retail & Flagship</span>
+          <span class="svc-marquee-zh">零售旗舰店</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <!-- Duplicate for seamless loop -->
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Commercial Complex</span>
+          <span class="svc-marquee-zh">商业综合体</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Office Space</span>
+          <span class="svc-marquee-zh">办公空间</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Hotel & Exhibition</span>
+          <span class="svc-marquee-zh">酒店会展</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Exhibition Design</span>
+          <span class="svc-marquee-zh">展览展示</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">EPC Project Management</span>
+          <span class="svc-marquee-zh">EPC项目总包</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Heritage Restoration</span>
+          <span class="svc-marquee-zh">古建修缮</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+        <div class="svc-marquee-item">
+          <span class="svc-marquee-en">Retail & Flagship</span>
+          <span class="svc-marquee-zh">零售旗舰店</span>
+        </div>
+        <div class="svc-marquee-sep"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Philosophy ═══ -->
+<!-- CCD: Full-screen large typography statement — "EVERY CORNER, A CANVAS..." -->
+<section id="philosophy">
+  <div class="container" style="max-width:1000px; margin:0 auto; padding:0 40px;">
+    <p class="phil-main reveal">
+      <span class="block">EVERY CORNER, A CANVAS.</span>
+      <span class="block">EVERY MOMENT, A</span>
+      <span class="block"><span class="gold">MASTERPIECE</span>.</span>
+    </p>
+    <p class="phil-concept reveal reveal-d1">LIVING ART · 生活艺术</p>
+    <p class="phil-desc reveal reveal-d2">
+      以理性构建空间秩序，以克制回归设计本质<br>
+      在融合中创造价值，在体验中唤醒情感
+    </p>
+    <div class="phil-tags reveal reveal-d3">
+      <div class="phil-tag">RATIONAL 理性</div>
+      <div class="phil-tag">RESTRAINT 克制</div>
+      <div class="phil-tag">INTEGRATION 融合</div>
+      <div class="phil-tag">EXPERIENCE 体验</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Footer ═══ -->
+<!-- CCD: Minimal — nav links + social icons + copyright -->
+<footer>
+  <div class="footer-container">
+    <div class="footer-top">
+      <div class="footer-nav">
+        <a href="#">HOME</a>
+        <a href="#our-story">ABOUT</a>
+        <a href="#">PORTFOLIO</a>
+        <a href="#">CAREER</a>
+        <a href="#">CONNECT</a>
+        <a href="#">NEWS</a>
+      </div>
+      <div class="footer-social">
+        <a href="#" title="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="#" title="Instagram">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" title="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2024–2025 GUNAIS 谷奈斯空间设计. All Rights Reserved.</p>
+      <p class="footer-icp">沪ICP备 · POWERED BY GUNAIS</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ─── Cursor (RAF smooth follow) ─── */
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let cx = 0, cy = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { cx = e.clientX; cy = e.clientY; });
+  (function cursorLoop() {
+    cursor.style.left = cx + 'px';
+    cursor.style.top = cy + 'px';
+    rx += (cx - rx) * 0.1;
+    ry += (cy - ry) * 0.1;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(cursorLoop);
+  })();
+
+  /* ─── Nav scroll effect ─── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  /* ─── Reveal on scroll ─── */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ─── Mobile menu ─── */
+  function toggleMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const hamburger = document.getElementById('hamburger');
+    menu.classList.toggle('open');
+    hamburger.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+</script>
+</body>
+</html>
